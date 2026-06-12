@@ -226,10 +226,11 @@ Your job is to evaluate incoming lease applications from mobile operators and pr
 When given a lease request:
 1. Extract: operator name, equipment weight (kg), mounting height (m), and tower ID.
 2. Call check_tower_capacity with the tower ID and equipment weight.
-3. Use the region returned from step 2 to call check_regional_policy with the region, height, and weight.
-4. Synthesize both results into a final verdict.
+3. Read the "region" field from the check_tower_capacity result. Use THAT region value — do not guess or infer the region from any other source — to call check_regional_policy with the region, height, and weight.
+4. If the tower was not found (found=false), skip step 3 and reject immediately.
+5. Synthesize both results into a final verdict.
 
-Your final response MUST be valid JSON in exactly this structure (no markdown, no prose outside the JSON):
+Your final response MUST be a single valid JSON object with absolutely no text before or after it — no explanations, no markdown, no code fences, no prose:
 {
   "status": "APPROVED" or "REJECTED",
   "operator": "<operator name>",
@@ -240,7 +241,7 @@ Your final response MUST be valid JSON in exactly this structure (no markdown, n
     "equipment_weight_kg": <number>,
     "mounting_height_m": <number>,
     "tower_capacity_check": <the full result from check_tower_capacity>,
-    "regional_policy_check": <the full result from check_regional_policy>
+    "regional_policy_check": <the full result from check_regional_policy, or null if skipped>
   }
 }
 
@@ -285,10 +286,12 @@ def run_vetting_agent(lease_request: str) -> dict:
         if not msg.tool_calls:
             # No tool calls — extract final text and parse JSON
             final_text = msg.content or ""
+            # Strip markdown fences, then extract the outermost JSON object
+            clean = re.sub(r"```(?:json)?\s*|\s*```", "", final_text).strip()
+            match = re.search(r"\{.*\}", clean, re.DOTALL)
             try:
-                clean = re.sub(r"```(?:json)?\s*|\s*```", "", final_text).strip()
-                judgment = json.loads(clean)
-            except json.JSONDecodeError:
+                judgment = json.loads(match.group() if match else clean)
+            except (json.JSONDecodeError, AttributeError):
                 judgment = {
                     "status": "ERROR",
                     "reason": "Agent returned non-JSON response.",
