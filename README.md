@@ -113,15 +113,3 @@ Three scenarios are included in `main()`:
 | 2 | Etisalat, 30kg, 20m, TWR-102 | REJECTED | 30kg exceeds SHJ-Coastal per-tenant limit of 25kg |
 | 3 | Vodafone, 10kg, 30m, TWR-999 | REJECTED | Tower TWR-999 does not exist in inventory |
 
----
-
-## Design Decisions
-
-**Why an agentic loop instead of a single function call?**
-The LLM needs two separate tool calls — capacity check first (to discover the region), then policy check (using that region). A single-shot call cannot chain dependent lookups. The loop lets the model act on intermediate results, which mirrors how real agentic workflows handle multi-step reasoning.
-
-**Why Groq (llama-3.3-70b-versatile)?**
-Fast inference, free tier with no billing required, and reliable native function-calling support sufficient for this use case.
-
-**Why ground the LLM with tools instead of letting it reason from raw file contents?**
-Passing raw JSON/text into the prompt and asking the model to do arithmetic is error-prone. Structured tool functions enforce correct logic and make the checks auditable — the tool result is deterministic regardless of how the model phrases the question.
