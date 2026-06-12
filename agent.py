@@ -9,9 +9,11 @@ import json
 import os
 import re
 import sys
+import time
 from pathlib import Path
 
 from groq import Groq
+from groq import APIConnectionError, APIStatusError
 
 # ---------------------------------------------------------------------------
 # Data layer
@@ -248,20 +250,96 @@ Your final response MUST be a single valid JSON object with absolutely no text b
 Approve only if BOTH checks pass. Reject if either check fails, citing the specific constraint violated."""
 
 # ---------------------------------------------------------------------------
+# Deterministic fallback
+# ---------------------------------------------------------------------------
+
+def _parse_lease_request(lease_request: str) -> dict | None:
+    """Extract operator, tower_id, weight, and height from plain-text request using regex."""
+    tower_match = re.search(r"(TWR-\d+)", lease_request, re.IGNORECASE)
+    weight_match = re.search(r"(\d+(?:\.\d+)?)\s*kg", lease_request, re.IGNORECASE)
+    height_match = re.search(r"(\d+(?:\.\d+)?)\s*meters?", lease_request, re.IGNORECASE)
+    operator_match = re.search(r"Operator\s+(\w+)", lease_request, re.IGNORECASE)
+
+    if not all([tower_match, weight_match, height_match, operator_match]):
+        return None
+
+    return {
+        "operator": operator_match.group(1),
+        "tower_id": tower_match.group(1).upper(),
+        "equipment_weight_kg": float(weight_match.group(1)),
+        "equipment_height_m": float(height_match.group(1)),
+    }
+
+
+def deterministic_vet(lease_request: str) -> dict:
+    """Rule-based vetting that bypasses the LLM entirely."""
+    print("[Fallback] Running deterministic rule-based vetting.")
+
+    parsed = _parse_lease_request(lease_request)
+    if parsed is None:
+        return {
+            "source": "deterministic_fallback",
+            "status": "ERROR",
+            "reason": "Could not parse lease request — manual review required.",
+        }
+
+    capacity = check_tower_capacity(parsed["tower_id"], parsed["equipment_weight_kg"])
+
+    if not capacity.get("found"):
+        return {
+            "source": "deterministic_fallback",
+            "status": "REJECTED",
+            "operator": parsed["operator"],
+            "tower_id": parsed["tower_id"],
+            "region": None,
+            "reason": capacity["message"],
+            "details": {
+                "equipment_weight_kg": parsed["equipment_weight_kg"],
+                "mounting_height_m": parsed["equipment_height_m"],
+                "tower_capacity_check": capacity,
+                "regional_policy_check": None,
+            },
+        }
+
+    policy = check_regional_policy(
+        capacity["region"],
+        parsed["equipment_height_m"],
+        parsed["equipment_weight_kg"],
+    )
+
+    approved = capacity.get("feasible", False) and policy.get("compliant", False)
+    reasons = []
+    if not capacity.get("feasible"):
+        reasons.append(capacity["message"])
+    if not policy.get("compliant"):
+        reasons.append(policy["message"])
+
+    return {
+        "source": "deterministic_fallback",
+        "status": "APPROVED" if approved else "REJECTED",
+        "operator": parsed["operator"],
+        "tower_id": parsed["tower_id"],
+        "region": capacity.get("region"),
+        "reason": "All checks passed." if approved else " ".join(reasons),
+        "details": {
+            "equipment_weight_kg": parsed["equipment_weight_kg"],
+            "mounting_height_m": parsed["equipment_height_m"],
+            "tower_capacity_check": capacity,
+            "regional_policy_check": policy,
+        },
+    }
+
+
+# ---------------------------------------------------------------------------
 # Agent loop
 # ---------------------------------------------------------------------------
 
-def run_vetting_agent(lease_request: str) -> dict:
-    api_key = os.environ.get("GROQ_API_KEY")
-    if not api_key:
-        raise ValueError("GROQ_API_KEY environment variable is not set.")
+MAX_RETRIES = 3
+RETRY_BACKOFF = [2, 4, 8]  # seconds between retries
 
-    client = Groq(api_key=api_key)
-    model = "llama-3.3-70b-versatile"
 
-    print(f"\n[Agent] Processing: {lease_request!r}")
-    print(f"[Agent] Model: {model}")
-
+def _run_ai_agent(client: Groq, model: str, lease_request: str) -> dict:
+    """Runs the agentic LLM loop. Raises on API failure."""
     messages = [
         {"role": "system", "content": SYSTEM_PROMPT},
         {"role": "user", "content": lease_request},
@@ -280,13 +358,10 @@ def run_vetting_agent(lease_request: str) -> dict:
 
         print(f"[Agent] finish_reason={finish_reason}")
 
-        # Append assistant message to history
         messages.append(msg)
 
         if not msg.tool_calls:
-            # No tool calls — extract final text and parse JSON
             final_text = msg.content or ""
-            # Strip markdown fences, then extract the outermost JSON object
             clean = re.sub(r"```(?:json)?\s*|\s*```", "", final_text).strip()
             match = re.search(r"\{.*\}", clean, re.DOTALL)
             try:
@@ -297,9 +372,9 @@ def run_vetting_agent(lease_request: str) -> dict:
                     "reason": "Agent returned non-JSON response.",
                     "raw_response": final_text,
                 }
+            judgment["source"] = "ai"
             return judgment
 
-        # Execute each tool call
         for tool_call in msg.tool_calls:
             fn_name = tool_call.function.name
             fn_args = json.loads(tool_call.function.arguments)
@@ -307,10 +382,7 @@ def run_vetting_agent(lease_request: str) -> dict:
             print(f"[Tool] {fn_name}({json.dumps(fn_args)})")
 
             fn = TOOL_FUNCTIONS.get(fn_name)
-            if fn is None:
-                result = {"error": f"Unknown tool: {fn_name}"}
-            else:
-                result = fn(**fn_args)
+            result = fn(**fn_args) if fn else {"error": f"Unknown tool: {fn_name}"}
 
             print(f"[Tool] Result: {json.dumps(result, indent=2)}")
 
@@ -319,6 +391,31 @@ def run_vetting_agent(lease_request: str) -> dict:
                 "tool_call_id": tool_call.id,
                 "content": json.dumps(result),
             })
+
+
+def run_vetting_agent(lease_request: str) -> dict:
+    api_key = os.environ.get("GROQ_API_KEY")
+    if not api_key:
+        raise ValueError("GROQ_API_KEY environment variable is not set.")
+
+    client = Groq(api_key=api_key)
+    model = "llama-3.3-70b-versatile"
+
+    print(f"\n[Agent] Processing: {lease_request!r}")
+    print(f"[Agent] Model: {model}")
+
+    for attempt in range(1, MAX_RETRIES + 1):
+        try:
+            return _run_ai_agent(client, model, lease_request)
+        except (APIConnectionError, APIStatusError) as e:
+            if attempt < MAX_RETRIES:
+                wait = RETRY_BACKOFF[attempt - 1]
+                print(f"[Agent] API error on attempt {attempt}/{MAX_RETRIES}: {e}. Retrying in {wait}s...")
+                time.sleep(wait)
+            else:
+                print(f"[Agent] All {MAX_RETRIES} attempts failed. Switching to deterministic fallback.")
+
+    return deterministic_vet(lease_request)
 
 
 # ---------------------------------------------------------------------------
