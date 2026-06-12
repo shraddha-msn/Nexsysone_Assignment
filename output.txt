@@ -1,0 +1,205 @@
+﻿
+======================================================================
+
+[Agent] Processing: 'Operator Du wants to mount a 15kg 5G antenna at a height of 40 meters on Tower TWR-101.'
+[Agent] Model: llama-3.3-70b-versatile
+[Agent] finish_reason=tool_calls
+[Tool] check_tower_capacity({"equipment_weight_kg": 15, "tower_id": "TWR-101"})
+[Tool] Result: {
+  "found": true,
+  "tower_id": "TWR-101",
+  "region": "DXB-North",
+  "max_height_m": 45,
+  "status": "active",
+  "current_weight_kg": 460,
+  "max_allowed_weight_kg": 500,
+  "available_capacity_kg": 40,
+  "requested_weight_kg": 15,
+  "projected_total_weight_kg": 475,
+  "feasible": true,
+  "message": "Weight check PASSED: projected total 475kg <= 500kg limit."
+}
+[Agent] finish_reason=tool_calls
+[Tool] check_regional_policy({"equipment_height_m": 40, "equipment_weight_kg": 15, "region": "DXB-North"})
+[Tool] Result: {
+  "region": "DXB-North",
+  "found": true,
+  "policy_text": "DXB-North Zone: Maximum equipment height allowed on any structure is 45 meters. Maximum single-tenant equipment weight is 100kg.",
+  "zone_max_height_m": 45.0,
+  "zone_max_tenant_weight_kg": 100.0,
+  "requested_height_m": 40,
+  "requested_weight_kg": 15,
+  "height_compliant": true,
+  "weight_compliant": true,
+  "compliant": true,
+  "special_conditions": [],
+  "violations": [],
+  "message": "Policy check PASSED: all regional constraints met."
+}
+[Agent] finish_reason=stop
+
+[VERDICT]
+{
+  "status": "APPROVED",
+  "operator": "Du",
+  "tower_id": "TWR-101",
+  "region": "DXB-North",
+  "reason": "All checks passed",
+  "details": {
+    "equipment_weight_kg": 15,
+    "mounting_height_m": 40,
+    "tower_capacity_check": {
+      "found": true,
+      "tower_id": "TWR-101",
+      "region": "DXB-North",
+      "max_height_m": 45,
+      "status": "active",
+      "current_weight_kg": 460,
+      "max_allowed_weight_kg": 500,
+      "available_capacity_kg": 40,
+      "requested_weight_kg": 15,
+      "projected_total_weight_kg": 475,
+      "feasible": true,
+      "message": "Weight check PASSED: projected total 475kg <= 500kg limit."
+    },
+    "regional_policy_check": {
+      "region": "DXB-North",
+      "found": true,
+      "policy_text": "DXB-North Zone: Maximum equipment height allowed on any structure is 45 meters. Maximum single-tenant equipment weight is 100kg.",
+      "zone_max_height_m": 45.0,
+      "zone_max_tenant_weight_kg": 100.0,
+      "requested_height_m": 40,
+      "requested_weight_kg": 15,
+      "height_compliant": true,
+      "weight_compliant": true,
+      "compliant": true,
+      "special_conditions": [],
+      "violations": [],
+      "message": "Policy check PASSED: all regional constraints met."
+    }
+  }
+}
+======================================================================
+
+======================================================================
+
+[Agent] Processing: 'Operator Etisalat wants to install a 30kg repeater at 20 meters on Tower TWR-102.'
+[Agent] Model: llama-3.3-70b-versatile
+[Agent] finish_reason=tool_calls
+[Tool] check_tower_capacity({"equipment_weight_kg": 30, "tower_id": "TWR-102"})
+[Tool] Result: {
+  "found": true,
+  "tower_id": "TWR-102",
+  "region": "SHJ-Coastal",
+  "max_height_m": 35,
+  "status": "active",
+  "current_weight_kg": 120,
+  "max_allowed_weight_kg": 300,
+  "available_capacity_kg": 180,
+  "requested_weight_kg": 30,
+  "projected_total_weight_kg": 150,
+  "feasible": true,
+  "message": "Weight check PASSED: projected total 150kg <= 300kg limit."
+}
+[Agent] finish_reason=tool_calls
+[Tool] check_regional_policy({"equipment_height_m": 20, "equipment_weight_kg": 30, "region": "SHJ-Coastal"})
+[Tool] Result: {
+  "region": "SHJ-Coastal",
+  "found": true,
+  "policy_text": "SHJ-Coastal Zone: Due to wind-load factors near the ocean, no single tenant asset may exceed 25kg. Maximum equipment height allowed on any structure is 35 meters. Corrosion-resistant hardware mandatory.",
+  "zone_max_height_m": 35.0,
+  "zone_max_tenant_weight_kg": 25.0,
+  "requested_height_m": 20,
+  "requested_weight_kg": 30,
+  "height_compliant": true,
+  "weight_compliant": false,
+  "compliant": false,
+  "special_conditions": [
+    "Corrosion-resistant hardware mandatory."
+  ],
+  "violations": [
+    "Equipment weight 30kg exceeds per-tenant limit of 25.0kg."
+  ],
+  "message": "Policy check FAILED: Equipment weight 30kg exceeds per-tenant limit of 25.0kg."
+}
+[Agent] finish_reason=stop
+
+[VERDICT]
+{
+  "status": "REJECTED",
+  "operator": "Etisalat",
+  "tower_id": "TWR-102",
+  "region": "SHJ-Coastal",
+  "reason": "Equipment weight exceeds per-tenant limit of 25kg",
+  "details": {
+    "equipment_weight_kg": 30,
+    "mounting_height_m": 20,
+    "tower_capacity_check": {
+      "found": true,
+      "tower_id": "TWR-102",
+      "region": "SHJ-Coastal",
+      "max_height_m": 35,
+      "status": "active",
+      "current_weight_kg": 120,
+      "max_allowed_weight_kg": 300,
+      "available_capacity_kg": 180,
+      "requested_weight_kg": 30,
+      "projected_total_weight_kg": 150,
+      "feasible": true,
+      "message": "Weight check PASSED: projected total 150kg <= 300kg limit."
+    },
+    "regional_policy_check": {
+      "region": "SHJ-Coastal",
+      "found": true,
+      "policy_text": "SHJ-Coastal Zone: Due to wind-load factors near the ocean, no single tenant asset may exceed 25kg. Maximum equipment height allowed on any structure is 35 meters. Corrosion-resistant hardware mandatory.",
+      "zone_max_height_m": 35.0,
+      "zone_max_tenant_weight_kg": 25.0,
+      "requested_height_m": 20,
+      "requested_weight_kg": 30,
+      "height_compliant": true,
+      "weight_compliant": false,
+      "compliant": false,
+      "special_conditions": [
+        "Corrosion-resistant hardware mandatory."
+      ],
+      "violations": [
+        "Equipment weight 30kg exceeds per-tenant limit of 25.0kg."
+      ],
+      "message": "Policy check FAILED: Equipment weight 30kg exceeds per-tenant limit of 25.0kg."
+    }
+  }
+}
+======================================================================
+
+======================================================================
+
+[Agent] Processing: 'Operator Vodafone wants to mount a 10kg antenna at 30 meters on Tower TWR-999.'
+[Agent] Model: llama-3.3-70b-versatile
+[Agent] finish_reason=tool_calls
+[Tool] check_tower_capacity({"equipment_weight_kg": 10, "tower_id": "TWR-999"})
+[Tool] Result: {
+  "found": false,
+  "tower_id": "TWR-999",
+  "message": "Tower 'TWR-999' does not exist in the inventory."
+}
+[Agent] finish_reason=stop
+
+[VERDICT]
+{
+  "status": "REJECTED",
+  "operator": "Vodafone",
+  "tower_id": "TWR-999",
+  "region": null,
+  "reason": "Tower not found",
+  "details": {
+    "equipment_weight_kg": 10,
+    "mounting_height_m": 30,
+    "tower_capacity_check": {
+      "found": false,
+      "tower_id": "TWR-999",
+      "message": "Tower 'TWR-999' does not exist in the inventory."
+    },
+    "regional_policy_check": null
+  }
+}
+======================================================================
