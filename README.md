@@ -119,7 +119,7 @@ Three scenarios are included in `main()`:
 **Why an agentic loop instead of a single function call?**
 The LLM needs two separate tool calls — capacity check first (to discover the region), then policy check (using that region). A single-shot call cannot chain dependent lookups. The loop lets the model act on intermediate results, which mirrors how real agentic workflows handle multi-step reasoning.
 
-**Why Gemini Flash?**
+**Why Gemini Flash Lite?**
 Fast, low-cost, and has reliable native function-calling support. The free tier is sufficient for this use case.
 
 **Why ground the LLM with tools instead of letting it reason from raw file contents?**
