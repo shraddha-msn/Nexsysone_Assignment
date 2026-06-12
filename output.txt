@@ -44,7 +44,7 @@
   "operator": "Du",
   "tower_id": "TWR-101",
   "region": "DXB-North",
-  "reason": "All checks passed",
+  "reason": "Both tower capacity and regional policy checks passed",
   "details": {
     "equipment_weight_kg": 15,
     "mounting_height_m": 40,
@@ -77,7 +77,8 @@
       "violations": [],
       "message": "Policy check PASSED: all regional constraints met."
     }
-  }
+  },
+  "source": "ai"
 }
 ======================================================================
 
@@ -130,7 +131,7 @@
   "operator": "Etisalat",
   "tower_id": "TWR-102",
   "region": "SHJ-Coastal",
-  "reason": "Equipment weight exceeds per-tenant limit of 25kg",
+  "reason": "Equipment weight exceeds regional municipality per-tenant weight limit",
   "details": {
     "equipment_weight_kg": 30,
     "mounting_height_m": 20,
@@ -167,7 +168,8 @@
       ],
       "message": "Policy check FAILED: Equipment weight 30kg exceeds per-tenant limit of 25.0kg."
     }
-  }
+  },
+  "source": "ai"
 }
 ======================================================================
 
@@ -190,7 +192,7 @@
   "operator": "Vodafone",
   "tower_id": "TWR-999",
   "region": null,
-  "reason": "Tower not found",
+  "reason": "Tower not found in inventory",
   "details": {
     "equipment_weight_kg": 10,
     "mounting_height_m": 30,
@@ -200,6 +202,7 @@
       "message": "Tower 'TWR-999' does not exist in the inventory."
     },
     "regional_policy_check": null
-  }
+  },
+  "source": "ai"
 }
 ======================================================================
