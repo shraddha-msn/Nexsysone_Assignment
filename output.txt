@@ -206,3 +206,125 @@
   "source": "ai"
 }
 ======================================================================
+
+
+======================================================================
+ DETERMINISTIC FALLBACK OUTPUT (AI unavailable scenario)
+======================================================================
+
+======================================================================
+[Fallback] Running deterministic rule-based vetting.
+[VERDICT]
+{
+  "source": "deterministic_fallback",
+  "status": "APPROVED",
+  "operator": "Du",
+  "tower_id": "TWR-101",
+  "region": "DXB-North",
+  "reason": "All checks passed.",
+  "details": {
+    "equipment_weight_kg": 15.0,
+    "mounting_height_m": 40.0,
+    "tower_capacity_check": {
+      "found": true,
+      "tower_id": "TWR-101",
+      "region": "DXB-North",
+      "max_height_m": 45,
+      "status": "active",
+      "current_weight_kg": 460,
+      "max_allowed_weight_kg": 500,
+      "available_capacity_kg": 40,
+      "requested_weight_kg": 15.0,
+      "projected_total_weight_kg": 475.0,
+      "feasible": true,
+      "message": "Weight check PASSED: projected total 475.0kg <= 500kg limit."
+    },
+    "regional_policy_check": {
+      "region": "DXB-North",
+      "found": true,
+      "policy_text": "DXB-North Zone: Maximum equipment height allowed on any structure is 45 meters. Maximum single-tenant equipment weight is 100kg.",
+      "zone_max_height_m": 45.0,
+      "zone_max_tenant_weight_kg": 100.0,
+      "requested_height_m": 40.0,
+      "requested_weight_kg": 15.0,
+      "height_compliant": true,
+      "weight_compliant": true,
+      "compliant": true,
+      "special_conditions": [],
+      "violations": [],
+      "message": "Policy check PASSED: all regional constraints met."
+    }
+  }
+}
+======================================================================
+======================================================================
+[Fallback] Running deterministic rule-based vetting.
+[VERDICT]
+{
+  "source": "deterministic_fallback",
+  "status": "REJECTED",
+  "operator": "Etisalat",
+  "tower_id": "TWR-102",
+  "region": "SHJ-Coastal",
+  "reason": "Policy check FAILED: Equipment weight 30.0kg exceeds per-tenant limit of 25.0kg.",
+  "details": {
+    "equipment_weight_kg": 30.0,
+    "mounting_height_m": 20.0,
+    "tower_capacity_check": {
+      "found": true,
+      "tower_id": "TWR-102",
+      "region": "SHJ-Coastal",
+      "max_height_m": 35,
+      "status": "active",
+      "current_weight_kg": 120,
+      "max_allowed_weight_kg": 300,
+      "available_capacity_kg": 180,
+      "requested_weight_kg": 30.0,
+      "projected_total_weight_kg": 150.0,
+      "feasible": true,
+      "message": "Weight check PASSED: projected total 150.0kg <= 300kg limit."
+    },
+    "regional_policy_check": {
+      "region": "SHJ-Coastal",
+      "found": true,
+      "policy_text": "SHJ-Coastal Zone: Due to wind-load factors near the ocean, no single tenant asset may exceed 25kg. Maximum equipment height allowed on any structure is 35 meters. Corrosion-resistant hardware mandatory.",
+      "zone_max_height_m": 35.0,
+      "zone_max_tenant_weight_kg": 25.0,
+      "requested_height_m": 20.0,
+      "requested_weight_kg": 30.0,
+      "height_compliant": true,
+      "weight_compliant": false,
+      "compliant": false,
+      "special_conditions": [
+        "Corrosion-resistant hardware mandatory."
+      ],
+      "violations": [
+        "Equipment weight 30.0kg exceeds per-tenant limit of 25.0kg."
+      ],
+      "message": "Policy check FAILED: Equipment weight 30.0kg exceeds per-tenant limit of 25.0kg."
+    }
+  }
+}
+======================================================================
+======================================================================
+[Fallback] Running deterministic rule-based vetting.
+[VERDICT]
+{
+  "source": "deterministic_fallback",
+  "status": "REJECTED",
+  "operator": "Vodafone",
+  "tower_id": "TWR-999",
+  "region": null,
+  "reason": "Tower 'TWR-999' does not exist in the inventory.",
+  "details": {
+    "equipment_weight_kg": 10.0,
+    "mounting_height_m": 30.0,
+    "tower_capacity_check": {
+      "found": false,
+      "tower_id": "TWR-999",
+      "message": "Tower 'TWR-999' does not exist in the inventory."
+    },
+    "regional_policy_check": null
+  }
+}
+======================================================================
