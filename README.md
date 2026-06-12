@@ -11,7 +11,7 @@ When a telecom operator submits a plain-English request to mount equipment on a 
 3. Calls `check_regional_policy` to verify the equipment meets zone-specific municipality rules
 4. Returns a structured JSON verdict — `APPROVED` or `REJECTED` — with full reasoning
 
-The agent is built on the **agentic tool-calling pattern**: the Gemini LLM decides which tools to call, in what order, and with what arguments — driven entirely by the plain-text input. Tool results are fed back into the conversation so the model can synthesize a grounded final judgment rather than guessing.
+The agent is built on the **agentic tool-calling pattern**: the LLM decides which tools to call, in what order, and with what arguments — driven entirely by the plain-text input. Tool results are fed back into the conversation so the model can synthesize a grounded final judgment rather than guessing.
 
 ---
 
@@ -20,8 +20,9 @@ The agent is built on the **agentic tool-calling pattern**: the Gemini LLM decid
 ```
 .
 ├── agent.py                  # Agent logic, tool implementations, agentic loop
-├── towers_inventory.json     # 100 towers across UAE emirates with capacity data
+├── towers_inventory.json     # Towers across UAE emirates with capacity data
 ├── regional_policies.txt     # Municipality rules per zone (height, weight, special conditions)
+├── output.txt                # Sample output from running all 3 test cases
 └── README.md
 ```
 
@@ -34,19 +35,19 @@ The agent is built on the **agentic tool-calling pattern**: the Gemini LLM decid
 Install the dependency:
 
 ```bash
-pip install google-genai
+pip install groq
 ```
 
-Get a free Gemini API key from [aistudio.google.com](https://aistudio.google.com) — no billing required for Gemini Flash.
+Get a free Groq API key from [console.groq.com](https://console.groq.com) — no billing required.
 
 Set the key as an environment variable:
 
 ```bash
 # macOS / Linux
-export GEMINI_API_KEY="your-key-here"
+export GROQ_API_KEY="your-key-here"
 
 # Windows PowerShell
-$env:GEMINI_API_KEY = "your-key-here"
+$env:GROQ_API_KEY = "your-key-here"
 ```
 
 ---
@@ -119,8 +120,8 @@ Three scenarios are included in `main()`:
 **Why an agentic loop instead of a single function call?**
 The LLM needs two separate tool calls — capacity check first (to discover the region), then policy check (using that region). A single-shot call cannot chain dependent lookups. The loop lets the model act on intermediate results, which mirrors how real agentic workflows handle multi-step reasoning.
 
-**Why Gemini Flash Lite?**
-Fast, low-cost, and has reliable native function-calling support. The free tier is sufficient for this use case.
+**Why Groq (llama-3.3-70b-versatile)?**
+Fast inference, free tier with no billing required, and reliable native function-calling support sufficient for this use case.
 
 **Why ground the LLM with tools instead of letting it reason from raw file contents?**
 Passing raw JSON/text into the prompt and asking the model to do arithmetic is error-prone. Structured tool functions enforce correct logic and make the checks auditable — the tool result is deterministic regardless of how the model phrases the question.
