@@ -1,0 +1,28 @@
+DXB-North Zone: Maximum equipment height allowed on any structure is 45 meters. Maximum single-tenant equipment weight is 100kg.
+DXB-South Zone: Maximum equipment height allowed on any structure is 50 meters. Maximum single-tenant equipment weight is 120kg.
+DXB-East Zone: Maximum equipment height allowed on any structure is 40 meters. Maximum single-tenant equipment weight is 80kg.
+DXB-West Zone: Maximum equipment height allowed on any structure is 55 meters. Maximum single-tenant equipment weight is 150kg.
+DXB-Central Zone: Maximum equipment height allowed on any structure is 60 meters. Maximum single-tenant equipment weight is 200kg. Heritage area restrictions apply — all installations require municipality approval.
+SHJ-North Zone: Maximum equipment height allowed on any structure is 40 meters. Maximum single-tenant equipment weight is 50kg.
+SHJ-South Zone: Due to proximity to residential areas, no single tenant asset may exceed 15kg. Maximum equipment height allowed is 30 meters.
+SHJ-Coastal Zone: Due to wind-load factors near the ocean, no single tenant asset may exceed 25kg. Maximum equipment height allowed on any structure is 35 meters. Corrosion-resistant hardware mandatory.
+SHJ-East Zone: Maximum equipment height allowed on any structure is 45 meters. Maximum single-tenant equipment weight is 75kg.
+SHJ-West Zone: Maximum equipment height allowed on any structure is 42 meters. Maximum single-tenant equipment weight is 90kg.
+AJM-North Zone: Maximum equipment height allowed on any structure is 38 meters. Maximum single-tenant equipment weight is 60kg.
+AJM-South Zone: Maximum equipment height allowed on any structure is 35 meters. Maximum single-tenant equipment weight is 55kg.
+AJM-Industrial Zone: Maximum equipment height allowed on any structure is 50 meters. Maximum single-tenant equipment weight is 180kg. Industrial zone — extended operational hours permitted.
+RAK-North Zone: Maximum equipment height allowed on any structure is 45 meters. Maximum single-tenant equipment weight is 100kg.
+RAK-South Zone: Maximum equipment height allowed on any structure is 40 meters. Maximum single-tenant equipment weight is 85kg.
+RAK-Mountain Zone: Due to elevated terrain and wind exposure, maximum equipment height above structure level is 30 meters. Maximum single-tenant equipment weight is 40kg. Anti-ice coating required.
+RAK-Coastal Zone: Due to saltwater corrosion risk, no single tenant asset may exceed 20kg. Maximum equipment height allowed is 38 meters. Corrosion-resistant hardware mandatory.
+UAQ-North Zone: Maximum equipment height allowed on any structure is 40 meters. Maximum single-tenant equipment weight is 70kg.
+UAQ-South Zone: Maximum equipment height allowed on any structure is 35 meters. Maximum single-tenant equipment weight is 60kg.
+UAQ-Coastal Zone: Due to wind-load factors near the ocean, no single tenant asset may exceed 20kg. Maximum equipment height allowed on any structure is 32 meters.
+FUJ-North Zone: Maximum equipment height allowed on any structure is 42 meters. Maximum single-tenant equipment weight is 80kg.
+FUJ-South Zone: Maximum equipment height allowed on any structure is 38 meters. Maximum single-tenant equipment weight is 70kg.
+FUJ-Coastal Zone: Due to wind-load factors near the ocean, no single tenant asset may exceed 22kg. Maximum equipment height allowed on any structure is 36 meters.
+ABU-North Zone: Maximum equipment height allowed on any structure is 65 meters. Maximum single-tenant equipment weight is 250kg. Approved for all major operator equipment.
+ABU-South Zone: Maximum equipment height allowed on any structure is 55 meters. Maximum single-tenant equipment weight is 200kg.
+ABU-Coastal Zone: Due to wind-load factors near the ocean, no single tenant asset may exceed 30kg. Maximum equipment height allowed on any structure is 40 meters.
+ABU-Central Zone: Maximum equipment height allowed on any structure is 70 meters. Maximum single-tenant equipment weight is 300kg. Premium infrastructure zone.
+ABU-Industrial Zone: Maximum equipment height allowed on any structure is 60 meters. Maximum single-tenant equipment weight is 280kg. 24/7 operations permitted.
